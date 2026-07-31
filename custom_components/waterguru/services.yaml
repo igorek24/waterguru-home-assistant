@@ -1,0 +1,3 @@
+refresh:
+  name: Refresh
+  description: Fetch the latest readings from WaterGuru immediately (bypasses the polling interval).

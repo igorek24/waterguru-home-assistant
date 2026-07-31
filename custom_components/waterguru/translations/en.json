@@ -1,0 +1,41 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "WaterGuru account",
+        "description": "Sign in with the same email and password you use in the WaterGuru app.",
+        "data": { "email": "Email", "password": "Password" }
+      },
+      "reauth_confirm": {
+        "title": "Re-authenticate WaterGuru",
+        "description": "The password for {email} was rejected. Enter it again.",
+        "data": { "password": "Password" }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid email or password",
+      "cannot_connect": "Could not reach the WaterGuru service"
+    },
+    "abort": {
+      "already_configured": "This WaterGuru account is already configured",
+      "reauth_successful": "Re-authentication was successful"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "WaterGuru options",
+        "data": {
+          "scan_interval_hours": "Polling interval in hours (WaterGuru measures about once a day)",
+          "temperature_unit": "Temperature unit reported by your account (auto-detects if unsure)"
+        }
+      }
+    }
+  },
+  "services": {
+    "refresh": {
+      "name": "Refresh",
+      "description": "Fetch the latest WaterGuru readings immediately."
+    }
+  }
+}
