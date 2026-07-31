@@ -13,3 +13,12 @@ Initial release. Verified against a live account with two SENSE pods.
 - Multiple water bodies and multiple pods per account
 - Config flow with re-auth, options (polling interval, temperature unit),
   `waterguru.refresh` service, diagnostics
+
+## 0.1.1 — 2026-07-31
+
+- Water temperature now defaults to the unit your pods report instead of
+  being converted to the Home Assistant system unit
+- Added `..._water_temperature_degf` and `..._degc` sensors that always
+  show their own unit, plus `fahrenheit`/`celsius` attributes on the main
+  temperature sensor
+- Clarified that the "Temperature unit" option is the source unit

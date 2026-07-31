@@ -43,7 +43,7 @@ sign in with the same email and password you use in the WaterGuru app.
 | Option | Default | Meaning |
 |---|---|---|
 | Polling interval (hours) | `6` | WaterGuru pods measure roughly once a day, so polling faster gains nothing and hammers their API. 1–24 h allowed. |
-| Temperature unit | `auto` | Which unit your account reports. Auto assumes Fahrenheit for readings ≥ 45 (no pool is 45 °C). Force `celsius`/`fahrenheit` if your account differs. |
+| Temperature unit | `auto` | Which unit your account **reports** (the source unit), not the display unit. Auto assumes Fahrenheit for readings ≥ 45 (no pool is 45 °C). |
 
 `waterguru.refresh` forces an immediate poll.
 
@@ -56,7 +56,9 @@ Per water body (device named after your pool):
 | `sensor.<pool>_free_chlorine` | ppm, with `target`, `good_min`/`good_max`, `alert`, `advice` attributes |
 | `sensor.<pool>_ph` | same attributes |
 | `sensor.<pool>_skimmer_flow` | gal/min |
-| `sensor.<pool>_water_temperature` | auto unit detection |
+| `sensor.<pool>_water_temperature` | follows your Home Assistant unit setting; `fahrenheit` / `celsius` attributes carry both values |
+| `sensor.<pool>_water_temperature_degf` | always Fahrenheit, regardless of HA's unit system |
+| `sensor.<pool>_water_temperature_degc` | always Celsius, regardless of HA's unit system |
 | `sensor.<pool>_status` | `GREEN` / `YELLOW` / `ORANGE` / `RED`, with all alerts + advice |
 | `sensor.<pool>_last_measurement` | timestamp of the pod's last reading |
 | `binary_sensor.<pool>_water_problem` | on when the status is not green |
@@ -132,6 +134,12 @@ refreshed with the refresh token instead of logging in on every poll.
 - **Readings look stale** — that's the data WaterGuru has; check
   `sensor.<pool>_last_measurement`. A pod that lost Wi-Fi or ran out of
   cassette stops measuring, and the cloud keeps serving the last values.
+- **Temperature shows the wrong unit** — the main temperature sensor follows
+  Home Assistant's unit system. To change just this entity: entity settings
+  (gear icon) → **Unit of Measurement** → °F/°C. Or use the dedicated
+  `..._water_temperature_degf` / `..._degc` sensors, which never convert.
+  (The "Temperature unit" option describes what WaterGuru *sends*, so
+  changing it does not change the display unit.)
 - **Debug logging**: `logger: logs: custom_components.waterguru: debug`
 - **Diagnostics**: integration entry → ⋮ → Download diagnostics (credentials
   and identifiers redacted).

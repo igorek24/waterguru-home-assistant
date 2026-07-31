@@ -4,12 +4,17 @@
       "user": {
         "title": "WaterGuru account",
         "description": "Sign in with the same email and password you use in the WaterGuru app.",
-        "data": { "email": "Email", "password": "Password" }
+        "data": {
+          "email": "Email",
+          "password": "Password"
+        }
       },
       "reauth_confirm": {
         "title": "Re-authenticate WaterGuru",
         "description": "The password for {email} was rejected. Enter it again.",
-        "data": { "password": "Password" }
+        "data": {
+          "password": "Password"
+        }
       }
     },
     "error": {
@@ -27,7 +32,7 @@
         "title": "WaterGuru options",
         "data": {
           "scan_interval_hours": "Polling interval in hours (WaterGuru measures about once a day)",
-          "temperature_unit": "Temperature unit reported by your account (auto-detects if unsure)"
+          "temperature_unit": "Unit your WaterGuru account reports (auto-detects; this is the source unit, not the display unit \u2014 see the dedicated \u00b0F/\u00b0C sensors)"
         }
       }
     }

@@ -47,6 +47,16 @@ async def async_setup_entry(
 
     for body_id, body in coordinator.data.water_bodies.items():
         entities.append(WaterGuruTemperatureSensor(coordinator, body_id, entry))
+        entities.append(
+            WaterGuruFixedUnitTemperatureSensor(
+                coordinator, body_id, entry, UnitOfTemperature.FAHRENHEIT
+            )
+        )
+        entities.append(
+            WaterGuruFixedUnitTemperatureSensor(
+                coordinator, body_id, entry, UnitOfTemperature.CELSIUS
+            )
+        )
         entities.append(WaterGuruLastMeasureSensor(coordinator, body_id))
         entities.append(WaterGuruStatusSensor(coordinator, body_id))
         for key in body.measurements:
@@ -114,7 +124,22 @@ class WaterGuruMeasurementSensor(WaterGuruWaterBodyEntity, SensorEntity):
         return attrs
 
 
+def _to_fahrenheit(value: float, source_unit: str) -> float:
+    return value if source_unit == UnitOfTemperature.FAHRENHEIT else value * 9 / 5 + 32
+
+
+def _to_celsius(value: float, source_unit: str) -> float:
+    return value if source_unit == UnitOfTemperature.CELSIUS else (value - 32) * 5 / 9
+
+
 class WaterGuruTemperatureSensor(WaterGuruWaterBodyEntity, SensorEntity):
+    """Water temperature, in whatever unit the account reports.
+
+    Home Assistant converts this to the unit you have configured for the
+    entity (or the system default). The dedicated Fahrenheit/Celsius
+    sensors below always show their own unit regardless of that setting.
+    """
+
     _attr_name = "Water temperature"
     _attr_device_class = SensorDeviceClass.TEMPERATURE
     _attr_state_class = SensorStateClass.MEASUREMENT
@@ -124,6 +149,21 @@ class WaterGuruTemperatureSensor(WaterGuruWaterBodyEntity, SensorEntity):
         super().__init__(coordinator, body_id)
         self._attr_unique_id = f"{body_id}_water_temp"
         self._configured_unit = entry.options.get(CONF_TEMPERATURE_UNIT, TEMP_AUTO)
+        # default the display unit to whatever the pod reports, so a
+        # Fahrenheit account is not shown Celsius on a metric system
+        self._attr_suggested_unit_of_measurement = self._source_unit()
+
+    def _source_unit(self) -> str:
+        """The unit the WaterGuru API is sending."""
+        if self._configured_unit == TEMP_C:
+            return UnitOfTemperature.CELSIUS
+        if self._configured_unit == TEMP_F:
+            return UnitOfTemperature.FAHRENHEIT
+        body = self.body
+        value = body.water_temp if body else None
+        if value is not None and value >= FAHRENHEIT_THRESHOLD:
+            return UnitOfTemperature.FAHRENHEIT
+        return UnitOfTemperature.CELSIUS
 
     @property
     def native_value(self) -> float | None:
@@ -132,14 +172,66 @@ class WaterGuruTemperatureSensor(WaterGuruWaterBodyEntity, SensorEntity):
 
     @property
     def native_unit_of_measurement(self) -> str:
+        return self._source_unit()
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        value = self.native_value
+        if value is None:
+            return {}
+        unit = self._source_unit()
+        return {
+            "fahrenheit": round(_to_fahrenheit(value, unit), 1),
+            "celsius": round(_to_celsius(value, unit), 1),
+            "reported_unit": unit,
+        }
+
+
+class WaterGuruFixedUnitTemperatureSensor(WaterGuruWaterBodyEntity, SensorEntity):
+    """Water temperature pinned to one unit, whatever HA is set to.
+
+    Deliberately has no temperature device class: that stops Home
+    Assistant converting it, so `..._fahrenheit` always reads Fahrenheit
+    and `..._celsius` always reads Celsius.
+    """
+
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _attr_suggested_display_precision = 1
+    _attr_icon = "mdi:pool-thermometer"
+
+    def __init__(self, coordinator, body_id: str, entry, unit: str) -> None:
+        super().__init__(coordinator, body_id)
+        self._unit = unit
+        self._configured_unit = entry.options.get(CONF_TEMPERATURE_UNIT, TEMP_AUTO)
+        suffix = "fahrenheit" if unit == UnitOfTemperature.FAHRENHEIT else "celsius"
+        self._attr_unique_id = f"{body_id}_water_temp_{suffix}"
+        self._attr_name = f"Water temperature ({unit})"
+        self._attr_native_unit_of_measurement = unit
+
+    def _source_unit(self) -> str:
         if self._configured_unit == TEMP_C:
             return UnitOfTemperature.CELSIUS
         if self._configured_unit == TEMP_F:
             return UnitOfTemperature.FAHRENHEIT
-        value = self.native_value
+        body = self.body
+        value = body.water_temp if body else None
         if value is not None and value >= FAHRENHEIT_THRESHOLD:
             return UnitOfTemperature.FAHRENHEIT
         return UnitOfTemperature.CELSIUS
+
+    @property
+    def native_value(self) -> float | None:
+        body = self.body
+        value = body.water_temp if body else None
+        if value is None:
+            return None
+        source = self._source_unit()
+        converted = (
+            _to_fahrenheit(value, source)
+            if self._unit == UnitOfTemperature.FAHRENHEIT
+            else _to_celsius(value, source)
+        )
+        return round(converted, 1)
 
 
 class WaterGuruStatusSensor(WaterGuruWaterBodyEntity, SensorEntity):

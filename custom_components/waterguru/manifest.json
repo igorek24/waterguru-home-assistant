@@ -9,5 +9,5 @@
   "issue_tracker": "https://github.com/igorek24/waterguru-home-assistant/issues",
   "loggers": ["custom_components.waterguru"],
   "requirements": ["pycognito>=2024.5.1"],
-  "version": "0.1.0"
+  "version": "0.1.1"
 }
