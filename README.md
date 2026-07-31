@@ -145,5 +145,19 @@ Cognito/Lambda flow) and
 (the payload shape), plus the
 [Home Assistant community thread](https://community.home-assistant.io/t/water-guru-integration/291917).
 
-Not affiliated with WaterGuru. Use at your own risk, and don't poll their
-API aggressively.
+## Trademarks and disclaimer
+
+This is an **unofficial, independent** project. It is not affiliated with,
+endorsed by, or supported by WaterGuru, Inc.
+
+"WaterGuru" and "SENSE" are trademarks of their respective owner and are
+used here only to identify the hardware this integration works with
+(nominative use). No WaterGuru logo, brand artwork, or other proprietary
+asset is included in this repository — the integration's icon is original
+artwork created for this project.
+
+The integration talks to WaterGuru's cloud service using your own account
+credentials, the same way their app does. Use at your own risk, respect
+WaterGuru's terms of service, and do not poll their API aggressively (the
+default six-hour interval is deliberate — the pods only measure about once
+a day).
