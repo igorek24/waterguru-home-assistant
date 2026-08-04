@@ -1,5 +1,12 @@
 # WaterGuru for Home Assistant
 
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=igorek24&repository=waterguru-home-assistant&category=integration)
+[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=waterguru)
+
+[![GitHub release](https://img.shields.io/github/v/release/igorek24/waterguru-home-assistant?style=flat-square)](https://github.com/igorek24/waterguru-home-assistant/releases)
+[![License](https://img.shields.io/github/license/igorek24/waterguru-home-assistant?style=flat-square)](LICENSE)
+[![hacs](https://img.shields.io/badge/HACS-custom-41BDF5.svg?style=flat-square)](https://hacs.xyz)
+
 Home Assistant integration for **WaterGuru** pool and spa monitors (SENSE
 pods). It signs in to the WaterGuru cloud exactly like the mobile app does
 and exposes every reading as native entities — no Docker sidecar, no REST
@@ -25,7 +32,9 @@ sensors, no YAML.
 
 ### HACS
 
-HACS → ⋮ → **Custom repositories** → `https://github.com/igorek24/waterguru-home-assistant`,
+**Easiest:** click the blue *My Home Assistant* badge at the top of this page — it opens your own Home Assistant and pre-fills this repository as a HACS custom repository. Then Download and restart.
+
+Manually: HACS → ⋮ → **Custom repositories** → `https://github.com/igorek24/waterguru-home-assistant`,
 type **Integration** → Download → restart Home Assistant.
 
 ### Manual
